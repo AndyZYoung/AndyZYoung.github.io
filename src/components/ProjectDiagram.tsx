@@ -28,11 +28,11 @@ const assistantStages = [
 const researchStages = [
   {
     title: 'Data foundation',
-    detail: 'JD.com transactions, clicks, and SKU records',
+    detail: 'Transactions · clicks · SKU attributes',
   },
   {
     title: 'Feature signals',
-    detail: 'Discount, attribute, and click-ratio features',
+    detail: 'Discount · attributes · click share',
   },
   {
     title: 'SKU taxonomy',
@@ -41,7 +41,7 @@ const researchStages = [
   },
   {
     title: 'Boundary logic',
-    detail: '0.20 click-ratio threshold for ambiguous preferences',
+    detail: 'Δ click share > 0.20 → decisive; otherwise ambiguous',
   },
   {
     title: 'Model search',
@@ -109,9 +109,9 @@ function MindSporeDiagram({ labelId }: { labelId: string }) {
           alt="Original 128-dimensional sinusoidal positional encoding heatmap for sequence positions 0 through 50"
         />
         <figcaption>
-          Each row represents one token position, while each column is one of the 128 encoding dimensions.
-          Fast-changing bands distinguish nearby positions; slower bands preserve longer-range order. Adding these
-          deterministic signals to token embeddings gives self-attention access to sequence order without recurrence.
+          Rows represent token positions; columns represent the 128 encoding dimensions. Rapid oscillations separate
+          nearby tokens, while slower bands retain longer-range order—giving self-attention deterministic access to
+          sequence structure.
         </figcaption>
       </figure>
     </div>
@@ -133,12 +133,17 @@ function SegmentationDiagram({ labelId }: { labelId: string }) {
           </li>
         ))}
       </ol>
+      <div className={s.researchSpacer} aria-hidden="true" />
       <div className={s.researchOutcome}>
-        <span>
-          <small>Selected model</small>
-          <strong>Random Forest</strong>
+        <span className={s.outcomeIntro}>
+          <small>Research outcome</small>
+          <strong>Interpretable SKU Taxonomy</strong>
         </span>
-        <strong>74.7% <small>test accuracy</small></strong>
+        <span className={s.outcomeMetric}>
+          <strong>4</strong>
+          <small>Balanced categories</small>
+        </span>
+        <p className={s.outcomeCategories}>Luxury · Cost-effective · Bargain · Other</p>
       </div>
     </div>
   )

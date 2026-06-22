@@ -128,10 +128,14 @@ export default function PersonalSite() {
               <motion.span className={s.l} {...rise(0.05)}>Yang</motion.span>
               <motion.span className={s.lAccent} {...rise(0.12)}>Zhang</motion.span>
             </h1>
-            <motion.p className={s.heroHeadline} {...rise(0.2)}>
-              M.S. Quantitative Finance &amp; Risk Management @ University of Michigan · B.Eng. Data Science and Big Data
-              Technology
-            </motion.p>
+            <motion.div className={s.heroHeadline} {...rise(0.2)}>
+              {profile.credentials.map((credential) => (
+                <div className={s.heroCredential} key={credential.degree}>
+                  <span className={s.heroDegree}>{credential.degree}</span>
+                  <span className={s.heroSchool}>@ {credential.school}</span>
+                </div>
+              ))}
+            </motion.div>
             <motion.div className={s.heroActions} {...rise(0.28)}>
               <a className={s.btnPrimary} href={profile.links.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowIcon size={15} /></a>
               <a className={s.btnLine} href={profile.links.handshake} target="_blank" rel="noreferrer">Handshake</a>
@@ -157,7 +161,12 @@ export default function PersonalSite() {
                   <h3>{e.school}</h3>
                   <span>{e.period}</span>
                 </div>
-                <p className={s.eduDegree}>{e.degree}{e.detail ? ` · ${e.detail}` : ''}{e.future ? ' · Incoming' : ''}</p>
+                <div className={s.eduCredential}>
+                  <p className={s.eduDegree}>{e.degree}</p>
+                  {(e.detail || e.future) && (
+                    <p className={s.eduStatus}>{e.future ? 'Incoming' : e.detail}</p>
+                  )}
+                </div>
                 <span className={s.coursesLabel}>{e.coursesLabel}</span>
                 <ul className={s.courses}>{e.courses.map((c) => <li key={c}>{c}</li>)}</ul>
               </motion.div>
@@ -222,10 +231,10 @@ export default function PersonalSite() {
 
                 <div className={s.diagramProjectGrid}>
                   <motion.h2 className={`${s.projTitle} ${s.diagramProjectTitle}`} {...rise(0)}>{p.title}</motion.h2>
-                  <ProjectDiagram variant={projectGridDiagram.variant} stretch={p.id === 'mindspore'} />
+                  <ProjectDiagram variant={projectGridDiagram.variant} stretch />
 
                   <motion.div
-                    className={`${s.diagramProjectCopy} ${p.id === 'mindspore' ? s.diagramProjectCopyStretch : ''}`}
+                    className={`${s.diagramProjectCopy} ${s.diagramProjectCopyStretch}`}
                     {...slideIn(-80)}
                   >
                     <p className={s.projBlurb}>{p.blurb}</p>
@@ -240,6 +249,46 @@ export default function PersonalSite() {
                     </div>
                     <div className={s.stack}>{p.stack.map((t) => <span key={t}>{t}</span>)}</div>
                   </motion.div>
+                </div>
+              </section>
+            )
+          }
+
+          if (mediaColumnDiagram) {
+            return (
+              <section key={p.id} id={p.id} className={s.project}>
+                <div className={s.projectHead}>
+                  <span className={s.projIndex}>{sectionNumber(p.id)}</span>
+                  <span className={s.tag}>{p.kind}</span>
+                </div>
+                <motion.h2 className={s.projTitle} {...rise(0)}>{p.title}</motion.h2>
+                <motion.p className={s.projBlurb} {...rise(0.06)}>{p.blurb}</motion.p>
+                <motion.div className={s.projectMeta} {...rise(0.1)}>
+                  <span>{p.role}</span>
+                  <span>{p.period}</span>
+                </motion.div>
+
+                <div className={s.publicationGrid}>
+                  <motion.div className={s.publicationVisual} {...slideIn(-80)}>
+                    <ProjectDiagram variant={mediaColumnDiagram.variant} embedded stretch />
+                  </motion.div>
+
+                  <motion.div className={s.publicationText} {...slideIn(80)}>
+                    <div className={s.projCopy}>
+                      {p.body.map((para, i) => (
+                        <p key={i} className={s.projP}>{para}</p>
+                      ))}
+                    </div>
+                    <div className={s.stack}>{p.stack.map((t) => <span key={t}>{t}</span>)}</div>
+                  </motion.div>
+
+                  {p.links && (
+                    <div className={`${s.links} ${s.publicationLinks}`}>
+                      {p.links.map((l) => (
+                        <a key={l.href} href={l.href} target="_blank" rel="noreferrer">{l.label} <ArrowIcon size={13} /></a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </section>
             )
@@ -263,17 +312,13 @@ export default function PersonalSite() {
                   className={`${s.projVisual} ${isCompactRight ? s.compactVisual : ''} ${isBalanced ? s.balancedVisual : ''}`}
                   {...slideIn(mediaOnRight ? 80 : -80)}
                 >
-                  {mediaColumnDiagram ? (
-                    <ProjectDiagram variant={mediaColumnDiagram.variant} embedded />
-                  ) : (
-                    <div className={`${s.frame} ${panelColor[idx]} ${isCompactRight ? s.compactFrame : ''}`}>
-                      {p.media?.type === 'youtube' ? (
-                        <YouTube id={p.media.src} title={p.title} accent="#e6a911" />
-                      ) : p.media?.type === 'image' ? (
-                        <img className={s.shot} src={p.media.src} alt={p.media.alt ?? p.title} />
-                      ) : null}
-                    </div>
-                  )}
+                  <div className={`${s.frame} ${panelColor[idx]} ${isCompactRight ? s.compactFrame : ''}`}>
+                    {p.media?.type === 'youtube' ? (
+                      <YouTube id={p.media.src} title={p.title} accent="#e6a911" />
+                    ) : p.media?.type === 'image' ? (
+                      <img className={s.shot} src={p.media.src} alt={p.media.alt ?? p.title} />
+                    ) : null}
+                  </div>
                   {p.links && (
                     <div className={s.links}>
                       {p.links.map((l) => (
@@ -308,7 +353,7 @@ export default function PersonalSite() {
             <span className={s.projIndex}>{sectionNumber('activities')}</span>
             <span className={s.tag}>Activities &amp; Student Work</span>
           </div>
-          <motion.h2 className={s.projTitle} {...rise(0)}>Building communities, not just code</motion.h2>
+          <motion.h2 className={s.projTitle} {...rise(0)}>Leadership &amp; Management</motion.h2>
           <div className={s.actGrid}>
             {activities.map((a, idx) => (
               <motion.div key={a.org} className={idx % 2 === 0 ? s.actBlue : s.actMustard} {...slideIn(idx % 2 === 0 ? -80 : 80)}>

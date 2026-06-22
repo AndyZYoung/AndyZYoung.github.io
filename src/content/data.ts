@@ -4,8 +4,16 @@
 
 export const profile = {
   name: 'Yang Zhang',
-  headline:
-    'M.S. in Quantitative Finance & Risk Management @ University of Michigan | B.Eng. in Data Science and Big Data Technology',
+  credentials: [
+    {
+      degree: 'M.S. Quantitative Finance & Risk Management',
+      school: 'University of Michigan',
+    },
+    {
+      degree: 'B.Eng. Data Science and Big Data Technology',
+      school: 'Shanghai University',
+    },
+  ],
   disciplines: ['AI Agent Engineering', 'LLM Applications', 'Data Science', 'Quantitative Finance'],
   location: 'Ann Arbor, MI / Shanghai, China',
   email: 'xinxin030316@gmail.com',
@@ -178,9 +186,10 @@ export const projects: Project[] = [
     blurb:
       'A study of how JD.com customers really choose products - and how to predict their preferences without forcing every shopper into one rigid bucket.',
     body: [
-      'Working from JD.com transaction-level data, I first grouped products into luxury / cost-effective / bargain / other. K-means produced lopsided clusters, so I designed a quartile-based manual scheme on discount and attribute features that gave balanced, explainable categories.',
-      'To predict each user\'s preference I compared Logistic Regression, Decision Tree, Random Forest, and Stacking, tuned with Recursive Feature Elimination plus Grid and Randomized Search.',
-      'The key idea is "boundary blurring": shoppers are rarely 100% one type, so I used click-ratio thresholds to let borderline users span categories. Accounting for that ambiguity lifted prediction accuracy to roughly 74% with Random Forest.',
+      'I analyzed JD.com transaction-level clicks together with discount, price, and SKU attributes. Because K-means produced strongly imbalanced clusters, I replaced it with quartile-based rules that define four interpretable product tiers: Luxury, Cost-effective, Bargain, and Other. This converted an unstable partition into a balanced taxonomy that could be inspected, explained, and reused as the target for downstream preference modeling.',
+      'To avoid forcing ambiguous shoppers into one segment, I excluded the catch-all “Other” group and modeled two overlapping click-share signals: Luxury + Cost-effective and Cost-effective + Bargain. A difference above 0.20 indicates a decisive preference; smaller gaps remain ambiguous. This boundary-aware rule keeps uncertain users visible instead of hiding them inside a hard label, better reflecting how purchasing behavior moves between adjacent price-value tiers.',
+      'I compared Logistic Regression, Decision Tree, Random Forest, and Stacking with RFE plus grid and randomized search. Logistic Regression established a stable linear baseline, the Decision Tree exposed nonlinear feature interactions, and Random Forest provided the strongest balance of generalization and robustness after tuning. Treating model comparison as a diagnostic exercise helped separate the effects of feature quality, decision boundaries, and parameter selection.',
+      'The final taxonomy preserves interpretability without treating preference as permanent or mutually exclusive, making the segments useful for recommendation and marketing analysis across city tier and education. My main takeaway is that segmentation is most useful when uncertainty remains explicit: stable categories organize the analysis, while overlapping signals acknowledge that customers can move between value orientations as context changes.',
     ],
     stack: ['Python', 'Pandas', 'NumPy', 'scikit-learn', 'K-means', 'Random Forest', 'Stacking'],
     media: {
@@ -200,11 +209,10 @@ export const projects: Project[] = [
     blurb:
       'Hands-on Transformer and LLM training on Huawei MindSpore - including a deep dive into how positional encoding lets attention understand word order.',
     body: [
-      'Trained and evaluated Transformer and BERT models with MindSpore and MindNLP on Huawei Cloud ModelArts, covering sequence modeling, sentiment classification, and BLEU-scored translation.',
-      'Studied the Transformer internals in depth - the slide here is from my camp report, explaining sinusoidal positional encoding: why attention has no built-in sense of order, and how sine/cosine signals inject position back in.',
-      'Deployed a local ChatGLM-6B chatbot through Gradio and explored PEFT, prompt tuning, and instruction tuning. The work earned Second Prize at the camp.',
-      'My main takeaway is that sinusoidal positional encoding acts as a multi-frequency coordinate system rather than a simple position label. Each sine/cosine pair changes at a different wavelength: higher-frequency dimensions separate nearby tokens, while lower-frequency dimensions preserve coarse order across longer spans.',
-      'Because the phase shift between two encoded positions depends on their distance, attention can recover relative displacement from deterministic absolute encodings. Adding this vector before the encoder introduces sequence order without recurrence or learned positional parameters, while keeping the representation compatible with the token-embedding dimension.',
+      'Trained and evaluated Transformer and BERT models with MindSpore and MindNLP on Huawei Cloud ModelArts, covering sequence classification, sentiment analysis, and BLEU-scored translation.',
+      'Built a local ChatGLM-6B demo with Gradio and explored PEFT, prompt tuning, and instruction tuning. The project received Second Prize at the MindSpore Innovation Camp.',
+      'My key finding is that sinusoidal positional encoding acts as a multi-frequency coordinate system. High-frequency dimensions distinguish nearby tokens, while lower-frequency dimensions preserve order across longer spans.',
+      'Because relative phase shifts depend on positional distance, self-attention can infer displacement from deterministic absolute encodings. Adding them to token embeddings supplies sequence order without recurrence or learned positional parameters.',
     ],
     stack: ['MindSpore', 'MindNLP', 'BERT', 'Transformer', 'ChatGLM-6B', 'Gradio'],
     media: {

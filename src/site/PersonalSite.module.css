@@ -115,7 +115,13 @@
 .l { display: block; }
 .lAccent { display: block; color: var(--blue); }
 
-.heroHeadline { font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.5; max-width: 640px; margin-bottom: 2.5rem; font-weight: 500; position: relative; z-index: 2; }
+.heroHeadline { font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.5; max-width: 760px; margin-bottom: 2.5rem; font-weight: 500; position: relative; z-index: 2; }
+
+.heroCredential { white-space: nowrap; }
+
+.heroDegree, .heroSchool { display: inline; }
+
+.heroSchool { margin-left: 0.32em; }
 
 .heroActions { display: flex; flex-wrap: wrap; gap: 0.7rem; position: relative; z-index: 2; }
 
@@ -180,7 +186,11 @@
 
 .eduHead span { font-size: 0.74rem; opacity: 0.85; white-space: nowrap; }
 
-.eduDegree { margin-bottom: 1.1rem; font-size: 0.95rem; opacity: 0.92; }
+.eduCredential { margin-bottom: 1.1rem; }
+
+.eduDegree { font-size: 0.95rem; opacity: 0.92; }
+
+.eduStatus { margin-top: 0.18rem; font-size: 0.82rem; font-weight: 600; opacity: 0.82; }
 
 .coursesLabel { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; opacity: 0.85; }
 
@@ -193,7 +203,7 @@
 
 .projTitle { font-weight: 700; font-size: clamp(2rem, 5vw, 3.8rem); line-height: 0.98; letter-spacing: -0.03em; margin-bottom: 1.1rem; max-width: 20ch; }
 
-.projBlurb { font-size: 1.1rem; line-height: 1.5; max-width: 62ch; color: #2a2a2a; font-weight: 500; margin-bottom: 1.2rem; }
+.projBlurb { font-size: clamp(1.08rem, 1.02rem + 0.1vw, 1.14rem); line-height: 1.5; max-width: 62ch; color: #2a2a2a; font-weight: 500; margin-bottom: 1.2rem; }
 
 .projectMeta {
   display: flex;
@@ -251,17 +261,48 @@
 }
 
 .diagramProjectCopyStretch .projBlurb {
-  font-size: 1rem;
-  line-height: 1.45;
   margin-bottom: 1rem;
 }
 
 .diagramProjectCopyStretch .projectMeta { margin-bottom: 1.6rem; }
 
 .diagramProjectCopyStretch .projP {
-  font-size: 0.92rem;
-  line-height: 1.54;
   margin-bottom: 0.78rem;
+}
+
+.publicationGrid {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas:
+    'visual copy'
+    'links .';
+  column-gap: clamp(2.25rem, 3.5vw, 3.5rem);
+  row-gap: 1rem;
+  align-items: stretch;
+}
+
+.publicationVisual {
+  grid-area: visual;
+  min-width: 0;
+  width: 100%;
+  max-width: 650px;
+}
+
+.publicationText {
+  grid-area: copy;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.publicationText .stack {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.publicationLinks {
+  grid-area: links;
+  margin-top: 0;
 }
 
 .stickyLeft { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
@@ -315,7 +356,7 @@
 
 .projText { min-width: 0; }
 
-.projP { font-size: 1rem; line-height: 1.7; margin-bottom: 1.1rem; color: #1c1c1c; }
+.projP { font-size: clamp(1.02rem, 0.95rem + 0.1vw, 1.08rem); line-height: 1.62; margin-bottom: 1.1rem; color: #1c1c1c; }
 
 .projP:last-child { margin-bottom: 0; }
 
@@ -457,9 +498,21 @@
   .diagramProjectCopy { padding-top: 1rem; }
   .diagramProjectCopyStretch { display: block; }
   .diagramProjectCopyStretch .stack { margin-top: 1.4rem; padding-top: 0; }
-  .diagramProjectCopyStretch .projBlurb { font-size: 1.1rem; line-height: 1.5; margin-bottom: 1.2rem; }
+  .diagramProjectCopyStretch .projBlurb { margin-bottom: 1.2rem; }
   .diagramProjectCopyStretch .projectMeta { margin-bottom: 2.5rem; }
-  .diagramProjectCopyStretch .projP { font-size: 1rem; line-height: 1.7; margin-bottom: 1.1rem; }
+  .diagramProjectCopyStretch .projP { margin-bottom: 1.1rem; }
+  .publicationGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'visual'
+      'links'
+      'copy';
+    gap: 1.6rem;
+  }
+  .publicationVisual { max-width: 650px; }
+  .publicationText { display: block; }
+  .publicationText .stack { margin-top: 1.4rem; padding-top: 0; }
+  .publicationLinks { margin-top: -0.6rem; }
   .stickyLeft .projVisual { order: 1; position: static; }
   .stickyLeft .projText { order: 2; }
   .compactRight .projText { order: 1; }
@@ -478,11 +531,14 @@
 
 @media (max-width: 640px) {
   .heroTitle { font-size: clamp(3.7rem, 18vw, 5rem); line-height: 0.82; letter-spacing: -0.045em; }
-  .heroHeadline { font-size: 1rem; margin-bottom: 2rem; }
+  .heroHeadline { font-size: clamp(0.78rem, 4vw, 1rem); line-height: 1.42; letter-spacing: -0.015em; margin-bottom: 2rem; }
+  .heroCredential + .heroCredential { margin-top: 0.34rem; }
+  .heroDegree, .heroSchool { display: block; white-space: nowrap; }
+  .heroSchool { margin-left: 0; }
   .heroActions { gap: 0.5rem; }
   .btnPrimary, .btnLine { padding-inline: 1rem; }
   .projTitle { font-size: clamp(2.05rem, 10.5vw, 3rem); }
-  .projBlurb { font-size: 1rem; }
+  .projBlurb { font-size: 1.08rem; }
   .projectMeta { margin-bottom: 2.2rem; }
   .projectMeta span + span { margin-left: 0.65rem; padding-left: 0.65rem; }
   .frame, .compactFrame { padding: 6px; }
