@@ -81,9 +81,28 @@ export const education: Education[] = [
   },
 ]
 
+type ProjectMedia =
+  | {
+      type: 'youtube'
+      src: string
+      alt?: string
+      poster?: string
+    }
+  | {
+      type: 'image'
+      src: string
+      alt?: string
+      poster?: string
+    }
+  | {
+      type: 'diagram'
+      variant: 'assistant-linear' | 'mindspore-research' | 'segmentation-research'
+      placement: 'project-grid' | 'media-column'
+    }
+
 export type Project = {
   id: string
-  index: string
+  layout: 'sticky-left' | 'compact-right' | 'balanced-left' | 'balanced-right'
   kind: string
   title: string
   role: string
@@ -91,12 +110,7 @@ export type Project = {
   blurb: string
   body: string[]
   stack: string[]
-  media?: {
-    type: 'youtube' | 'image'
-    src: string
-    alt?: string
-    poster?: string
-  }
+  media?: ProjectMedia
   figure?: { src: string; alt: string; caption: string }
   links?: { label: string; href: string }[]
 }
@@ -104,7 +118,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     id: 'anomaly',
-    index: '01',
+    layout: 'sticky-left',
     kind: 'Senior Thesis - Computer Vision / Deep Learning',
     title: 'Weakly Supervised Video Anomaly Detection',
     role: 'Computer Vision / Deep Learning Engineer',
@@ -135,7 +149,7 @@ export const projects: Project[] = [
   },
   {
     id: 'assistant',
-    index: '02',
+    layout: 'compact-right',
     kind: 'Full-Stack LLM Application',
     title: 'AI-Powered Course Assistant System',
     role: 'Full-Stack LLM Developer',
@@ -143,20 +157,20 @@ export const projects: Project[] = [
     blurb:
       'An AI tutor that answers from your own course material - grounded retrieval, a knowledge graph of the syllabus, and a talking digital human front end.',
     body: [
-      'Instead of generic chatbot answers, this assistant reads the actual lecture materials and responds only from what the course taught - local retrieval-augmented Q&A built on Ollama, DeepSeek-R1, and BGE embeddings.',
+      'Instead of generic chatbot answers, this assistant reads the actual lecture materials and responds only from what the course taught - local retrieval-augmented Q&A built on Ollama, DeepSeek API (R1), and BGE embeddings.',
       'A LightRAG knowledge graph extracts entities and relationships from the syllabus, so the system can answer both detail questions and "how does this connect to that" questions, with the graph visualized for the student.',
       'The front end is a Vue 3 course portal wired to a Three.js digital human with Azure text-to-speech, holding ~30 FPS rendering and sub-3s responses in testing.',
     ],
-    stack: ['Ollama', 'DeepSeek-R1', 'LightRAG', 'BGE Embeddings', 'Vue 3', 'Three.js', 'Azure TTS'],
+    stack: ['Ollama', 'DeepSeek API (R1)', 'LightRAG', 'BGE Embeddings', 'Vue 3', 'Three.js', 'Azure TTS'],
     media: {
-      type: 'image',
-      src: '/projects/course-assistant.svg',
-      alt: 'AI course assistant architecture',
+      type: 'diagram',
+      variant: 'assistant-linear',
+      placement: 'project-grid',
     },
   },
   {
     id: 'publication',
-    index: '03',
+    layout: 'balanced-left',
     kind: 'Publication - First Author, ICCSMT 2024 (EI-indexed)',
     title: 'Customer Segmentation: Data-Driven Research on Transaction-Level Data of JD.com',
     role: 'First Author',
@@ -170,15 +184,15 @@ export const projects: Project[] = [
     ],
     stack: ['Python', 'Pandas', 'NumPy', 'scikit-learn', 'K-means', 'Random Forest', 'Stacking'],
     media: {
-      type: 'image',
-      src: '/projects/segmentation.svg',
-      alt: 'Customer segmentation pipeline',
+      type: 'diagram',
+      variant: 'segmentation-research',
+      placement: 'media-column',
     },
     links: [{ label: 'Read on ACM Digital Library', href: 'https://dl.acm.org/doi/10.1145/3708036.3708235' }],
   },
   {
     id: 'mindspore',
-    index: '04',
+    layout: 'balanced-right',
     kind: 'MindSpore Innovation Camp - Second Prize',
     title: 'NLP & LLM Deployment with MindSpore',
     role: 'NLP / LLM Engineer',
@@ -189,12 +203,14 @@ export const projects: Project[] = [
       'Trained and evaluated Transformer and BERT models with MindSpore and MindNLP on Huawei Cloud ModelArts, covering sequence modeling, sentiment classification, and BLEU-scored translation.',
       'Studied the Transformer internals in depth - the slide here is from my camp report, explaining sinusoidal positional encoding: why attention has no built-in sense of order, and how sine/cosine signals inject position back in.',
       'Deployed a local ChatGLM-6B chatbot through Gradio and explored PEFT, prompt tuning, and instruction tuning. The work earned Second Prize at the camp.',
+      'My main takeaway is that sinusoidal positional encoding acts as a multi-frequency coordinate system rather than a simple position label. Each sine/cosine pair changes at a different wavelength: higher-frequency dimensions separate nearby tokens, while lower-frequency dimensions preserve coarse order across longer spans.',
+      'Because the phase shift between two encoded positions depends on their distance, attention can recover relative displacement from deterministic absolute encodings. Adding this vector before the encoder introduces sequence order without recurrence or learned positional parameters, while keeping the representation compatible with the token-embedding dimension.',
     ],
     stack: ['MindSpore', 'MindNLP', 'BERT', 'Transformer', 'ChatGLM-6B', 'Gradio'],
     media: {
-      type: 'image',
-      src: '/projects/positional-encoding.png',
-      alt: 'Positional encoding slide from MindSpore camp report',
+      type: 'diagram',
+      variant: 'mindspore-research',
+      placement: 'project-grid',
     },
   },
 ]
@@ -261,14 +277,14 @@ export const activities: Activity[] = [
 ]
 
 export const navItems = [
-  { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'anomaly', label: 'Anomaly Detection' },
-  { id: 'assistant', label: 'Course Assistant' },
-  { id: 'publication', label: 'Publication' },
-  { id: 'mindspore', label: 'MindSpore' },
-  { id: 'activities', label: 'Activities' },
+  { id: 'home', index: '00', label: 'Home' },
+  { id: 'about', index: '01', label: 'About' },
+  { id: 'experience', index: '02', label: 'Experience' },
+  { id: 'anomaly', index: '03', label: 'Anomaly Detection' },
+  { id: 'assistant', index: '04', label: 'Course Assistant' },
+  { id: 'publication', index: '05', label: 'Publication' },
+  { id: 'mindspore', index: '06', label: 'MindSpore' },
+  { id: 'activities', index: '07', label: 'Activities' },
 ]
 
 // Each style preview shows the nav design plus the sections that exist in the
@@ -280,4 +296,8 @@ export const previewNav = [
   { id: 'contact', label: 'Contact' },
 ]
 
-export const anomaly = projects[0]
+export const previewProjectIndex = '01'
+
+export const anomaly = projects[0] as Project & {
+  media: Extract<ProjectMedia, { type: 'youtube' }>
+}

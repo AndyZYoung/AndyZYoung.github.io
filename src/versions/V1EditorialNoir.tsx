@@ -5,7 +5,7 @@ import { gsap, ScrollTrigger } from '../lib/gsap'
 import { Reveal } from '../components/Reveal'
 import { YouTube } from '../components/YouTube'
 import { LinkedInIcon, HandshakeIcon, GitHubIcon, ArrowIcon, DocIcon, DownloadIcon } from '../components/Icons'
-import { profile, about, education, anomaly, previewNav } from '../content/data'
+import { profile, about, education, anomaly, previewNav, previewProjectIndex } from '../content/data'
 import s from './V1EditorialNoir.module.css'
 
 export default function V1EditorialNoir() {
@@ -137,7 +137,7 @@ export default function V1EditorialNoir() {
 
         <section id="anomaly" className={s.work}>
           <div className={s.workHead}>
-            <Reveal as="span" className={s.workIndex}>{anomaly.index}</Reveal>
+            <Reveal as="span" className={s.workIndex}>{previewProjectIndex}</Reveal>
             <Reveal as="span" className={s.sectionTag}>{anomaly.kind}</Reveal>
             <Reveal as="h2" className={s.workTitle}>{anomaly.title}</Reveal>
             <Reveal as="p" className={s.workBlurb}>{anomaly.blurb}</Reveal>

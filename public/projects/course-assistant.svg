@@ -19,7 +19,7 @@
 
   <rect x="40" y="150" width="200" height="78" rx="12" class="ca-fill" />
   <text x="140" y="178" text-anchor="middle" class="ca-t">BGE Embeddings</text>
-  <text x="140" y="198" text-anchor="middle" class="ca-s">+ Ollama / DeepSeek-R1</text>
+  <text x="140" y="198" text-anchor="middle" class="ca-s">+ Ollama / DeepSeek API (R1)</text>
   <text x="140" y="216" text-anchor="middle" class="ca-s">grounded retrieval</text>
 
   <rect x="400" y="150" width="200" height="78" rx="12" class="ca-fill" />

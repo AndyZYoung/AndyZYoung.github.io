@@ -1,7 +1,9 @@
+import { useEffect, useRef } from 'react'
 import { motion, useScroll, useSpring, MotionConfig } from 'framer-motion'
 import { useLenis, scrollToId } from '../hooks/useLenis'
 import { useActiveSection } from '../hooks/useActiveSection'
 import { YouTube } from '../components/YouTube'
+import { ProjectDiagram } from '../components/ProjectDiagram'
 import { LinkedInIcon, HandshakeIcon, GitHubIcon, ArrowIcon, DocIcon, DownloadIcon } from '../components/Icons'
 import { profile, about, education, experience, projects, activities, navItems } from '../content/data'
 import s from './PersonalSite.module.css'
@@ -22,11 +24,32 @@ const rise = (delay = 0) => ({
 
 const panelColor = ['eduBlue', 'eduMustard', 'eduBlue', 'eduMustard'] as const
 
+const sectionNumber = (id: string) => navItems.find((item) => item.id === id)?.index ?? ''
+
+const scrollToSection = (id: string) => {
+  const navHeight = window.innerWidth <= 980
+    ? document.querySelector<HTMLElement>(`.${s.nav}`)?.getBoundingClientRect().height ?? 0
+    : 0
+  scrollToId(id, navHeight ? -(navHeight + 16) : 0)
+}
+
 export default function PersonalSite() {
   useLenis()
   const active = useActiveSection(navItems.map((n) => n.id))
+  const navListRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 })
+
+  useEffect(() => {
+    if (!active || window.innerWidth > 980) return
+
+    const activeItem = navListRef.current?.querySelector<HTMLElement>('[aria-current="page"]')
+    activeItem?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'nearest',
+      inline: 'center',
+    })
+  }, [active])
 
   return (
     <MotionConfig reducedMotion="user">
@@ -34,17 +57,18 @@ export default function PersonalSite() {
       <motion.div className={s.progress} style={{ scaleX: progress }} aria-hidden />
 
       <aside className={s.nav}>
-        <button className={s.brand} onClick={() => scrollToId('home')}>
+        <button className={s.brand} onClick={() => scrollToSection('home')}>
           <span className={s.brandCircle} />YANG ZHANG
         </button>
-        <nav className={s.navList}>
-          {navItems.map((n, i) => (
+        <nav className={s.navList} ref={navListRef} aria-label="Portfolio sections">
+          {navItems.map((n) => (
             <button
               key={n.id}
               className={`${s.navItem} ${active === n.id ? s.navActive : ''}`}
-              onClick={() => scrollToId(n.id)}
+              onClick={() => scrollToSection(n.id)}
+              aria-current={active === n.id ? 'page' : undefined}
             >
-              <span className={s.navIdx}>{String(i).padStart(2, '0')}</span>
+              <span className={s.navIdx}>{n.index}</span>
               {n.label}
             </button>
           ))}
@@ -98,35 +122,37 @@ export default function PersonalSite() {
               }}
             />
           </div>
-          <motion.div className={s.heroKicker} {...rise(0)}>{profile.disciplines.join('  /  ')}</motion.div>
-          <h1 className={s.heroTitle}>
-            <motion.span className={s.l} {...rise(0.05)}>YANG</motion.span>
-            <motion.span className={s.lAccent} {...rise(0.12)}>ZHANG</motion.span>
-          </h1>
-          <motion.p className={s.heroHeadline} {...rise(0.2)}>
-            M.S. Quantitative Finance &amp; Risk Management @ University of Michigan · B.Eng. Data Science and Big Data
-            Technology
-          </motion.p>
-          <motion.div className={s.heroActions} {...rise(0.28)}>
-            <a className={s.btnPrimary} href={profile.links.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowIcon size={15} /></a>
-            <a className={s.btnLine} href={profile.links.handshake} target="_blank" rel="noreferrer">Handshake</a>
-            <a className={s.btnLine} href={profile.resumePreview} target="_blank" rel="noreferrer"><DocIcon size={14} /> Preview resume</a>
-            <a className={s.btnLine} href={profile.resumeDownload} download><DownloadIcon size={14} /> Download</a>
-          </motion.div>
-          <button className={s.scrollHint} onClick={() => scrollToId('about')}>Scroll ↓</button>
+          <div className={s.heroContent}>
+            <motion.div className={s.heroKicker} {...rise(0)}>{profile.disciplines.join('  /  ')}</motion.div>
+            <h1 className={s.heroTitle}>
+              <motion.span className={s.l} {...rise(0.05)}>Yang</motion.span>
+              <motion.span className={s.lAccent} {...rise(0.12)}>Zhang</motion.span>
+            </h1>
+            <motion.p className={s.heroHeadline} {...rise(0.2)}>
+              M.S. Quantitative Finance &amp; Risk Management @ University of Michigan · B.Eng. Data Science and Big Data
+              Technology
+            </motion.p>
+            <motion.div className={s.heroActions} {...rise(0.28)}>
+              <a className={s.btnPrimary} href={profile.links.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowIcon size={15} /></a>
+              <a className={s.btnLine} href={profile.links.handshake} target="_blank" rel="noreferrer">Handshake</a>
+              <a className={s.btnLine} href={profile.resumePreview} target="_blank" rel="noreferrer"><DocIcon size={14} /> Preview resume</a>
+              <a className={s.btnLine} href={profile.resumeDownload} download><DownloadIcon size={14} /> Download</a>
+            </motion.div>
+          </div>
+          <button className={s.scrollHint} onClick={() => scrollToSection('about')}>Scroll ↓</button>
         </section>
 
         {/* ABOUT */}
         <section id="about" className={s.about}>
           <motion.div className={s.aboutBlock} {...slideIn(-100)}>
-            <span className={s.tagLight}>About</span>
+            <span className={s.tagLight}><span className={s.aboutIndex}>{sectionNumber('about')}</span> About</span>
             {about.summary.map((p, i) => (
               <p key={i} className={s.bioP}>{p}</p>
             ))}
           </motion.div>
           <div className={s.edu}>
             {education.map((e, idx) => (
-              <motion.div key={e.school} className={idx % 2 === 0 ? s.eduMustard : s.eduBlue} {...slideIn(idx % 2 === 0 ? 100 : -100)}>
+              <motion.div key={e.school} className={idx % 2 === 0 ? s.eduMustard : s.eduBlue} {...slideIn(100, idx * 0.08)}>
                 <div className={s.eduHead}>
                   <h3>{e.school}</h3>
                   <span>{e.period}</span>
@@ -142,7 +168,7 @@ export default function PersonalSite() {
         {/* EXPERIENCE */}
         <section id="experience" className={s.experience}>
           <div className={s.projectHead}>
-            <span className={s.projIndex}>◆</span>
+            <span className={s.projIndex}>{sectionNumber('experience')}</span>
             <span className={s.tag}>Professional Experience</span>
           </div>
           <motion.h2 className={s.projTitle} {...rise(0)}>Shipping AI systems in the real world</motion.h2>
@@ -171,26 +197,83 @@ export default function PersonalSite() {
 
         {/* PROJECTS */}
         {projects.map((p, idx) => {
-          const flip = idx % 2 === 1
-          const isVideo = p.media?.type === 'youtube'
+          const diagramMedia = p.media?.type === 'diagram' ? p.media : null
+          const projectGridDiagram = diagramMedia?.placement === 'project-grid' ? diagramMedia : null
+          const mediaColumnDiagram = diagramMedia?.placement === 'media-column' ? diagramMedia : null
+          const isCompactRight = p.layout === 'compact-right'
+          const isBalancedLeft = p.layout === 'balanced-left'
+          const isBalancedRight = p.layout === 'balanced-right'
+          const isBalanced = isBalancedLeft || isBalancedRight
+          const mediaOnRight = isCompactRight || isBalancedRight
+          const layoutClass = {
+            'sticky-left': s.stickyLeft,
+            'compact-right': s.compactRight,
+            'balanced-left': s.balancedLeft,
+            'balanced-right': s.balancedRight,
+          }[p.layout]
+
+          if (projectGridDiagram) {
+            return (
+              <section key={p.id} id={p.id} className={s.project}>
+                <div className={s.projectHead}>
+                  <span className={s.projIndex}>{sectionNumber(p.id)}</span>
+                  <span className={s.tag}>{p.kind}</span>
+                </div>
+
+                <div className={s.diagramProjectGrid}>
+                  <motion.h2 className={`${s.projTitle} ${s.diagramProjectTitle}`} {...rise(0)}>{p.title}</motion.h2>
+                  <ProjectDiagram variant={projectGridDiagram.variant} stretch={p.id === 'mindspore'} />
+
+                  <motion.div
+                    className={`${s.diagramProjectCopy} ${p.id === 'mindspore' ? s.diagramProjectCopyStretch : ''}`}
+                    {...slideIn(-80)}
+                  >
+                    <p className={s.projBlurb}>{p.blurb}</p>
+                    <div className={s.projectMeta}>
+                      <span>{p.role}</span>
+                      <span>{p.period}</span>
+                    </div>
+                    <div className={s.projCopy}>
+                      {p.body.map((para, i) => (
+                        <p key={i} className={s.projP}>{para}</p>
+                      ))}
+                    </div>
+                    <div className={s.stack}>{p.stack.map((t) => <span key={t}>{t}</span>)}</div>
+                  </motion.div>
+                </div>
+              </section>
+            )
+          }
+
           return (
             <section key={p.id} id={p.id} className={s.project}>
               <div className={s.projectHead}>
-                <span className={s.projIndex}>{p.index}</span>
+                <span className={s.projIndex}>{sectionNumber(p.id)}</span>
                 <span className={s.tag}>{p.kind}</span>
               </div>
               <motion.h2 className={s.projTitle} {...rise(0)}>{p.title}</motion.h2>
               <motion.p className={s.projBlurb} {...rise(0.06)}>{p.blurb}</motion.p>
+              <motion.div className={s.projectMeta} {...rise(0.1)}>
+                <span>{p.role}</span>
+                <span>{p.period}</span>
+              </motion.div>
 
-              <div className={`${s.projBody} ${flip ? s.flip : ''}`}>
-                <motion.div className={s.projVisual} {...slideIn(flip ? 80 : -80)}>
-                  <div className={`${s.frame} ${panelColor[idx]}`}>
-                    {isVideo ? (
-                      <YouTube id={p.media!.src} title={p.title} accent="#e6a911" />
-                    ) : (
-                      <img className={s.shot} src={p.media!.src} alt={p.media!.alt ?? p.title} />
-                    )}
-                  </div>
+              <div className={`${s.projBody} ${layoutClass}`}>
+                <motion.div
+                  className={`${s.projVisual} ${isCompactRight ? s.compactVisual : ''} ${isBalanced ? s.balancedVisual : ''}`}
+                  {...slideIn(mediaOnRight ? 80 : -80)}
+                >
+                  {mediaColumnDiagram ? (
+                    <ProjectDiagram variant={mediaColumnDiagram.variant} embedded />
+                  ) : (
+                    <div className={`${s.frame} ${panelColor[idx]} ${isCompactRight ? s.compactFrame : ''}`}>
+                      {p.media?.type === 'youtube' ? (
+                        <YouTube id={p.media.src} title={p.title} accent="#e6a911" />
+                      ) : p.media?.type === 'image' ? (
+                        <img className={s.shot} src={p.media.src} alt={p.media.alt ?? p.title} />
+                      ) : null}
+                    </div>
+                  )}
                   {p.links && (
                     <div className={s.links}>
                       {p.links.map((l) => (
@@ -200,10 +283,12 @@ export default function PersonalSite() {
                   )}
                 </motion.div>
 
-                <motion.div className={s.projText} {...slideIn(flip ? -80 : 80)}>
-                  {p.body.map((para, i) => (
-                    <p key={i} className={s.projP}>{para}</p>
-                  ))}
+                <motion.div className={s.projText} {...slideIn(mediaOnRight ? -80 : 80)}>
+                  <div className={s.projCopy}>
+                    {p.body.map((para, i) => (
+                      <p key={i} className={s.projP}>{para}</p>
+                    ))}
+                  </div>
                   {p.figure && (
                     <figure className={s.figure}>
                       <img src={p.figure.src} alt={p.figure.alt} />
@@ -220,7 +305,7 @@ export default function PersonalSite() {
         {/* ACTIVITIES */}
         <section id="activities" className={s.activities}>
           <div className={s.projectHead}>
-            <span className={s.projIndex}>05</span>
+            <span className={s.projIndex}>{sectionNumber('activities')}</span>
             <span className={s.tag}>Activities &amp; Student Work</span>
           </div>
           <motion.h2 className={s.projTitle} {...rise(0)}>Building communities, not just code</motion.h2>
@@ -238,7 +323,10 @@ export default function PersonalSite() {
 
         {/* FOOTER */}
         <footer id="contact" className={s.footer}>
-          <motion.h2 className={s.footerTitle} {...slideIn(-100)}>LET&apos;S<br />CONNECT</motion.h2>
+          <motion.h2 className={s.footerTitle} aria-label="Contact with me" {...slideIn(-100)}>
+            <span>CONTACT</span>
+            <span className={s.footerTitleSmall}>WITH ME</span>
+          </motion.h2>
           <div className={s.footerLinks}>
             <a href={profile.links.linkedin} target="_blank" rel="noreferrer"><LinkedInIcon size={20} /> LinkedIn</a>
             <a href={profile.links.handshake} target="_blank" rel="noreferrer"><HandshakeIcon size={20} /> Handshake</a>

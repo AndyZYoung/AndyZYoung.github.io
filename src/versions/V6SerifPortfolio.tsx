@@ -3,7 +3,7 @@ import { useActiveSection } from '../hooks/useActiveSection'
 import { Reveal } from '../components/Reveal'
 import { YouTube } from '../components/YouTube'
 import { LinkedInIcon, HandshakeIcon, GitHubIcon, ArrowIcon, DocIcon, DownloadIcon } from '../components/Icons'
-import { profile, about, education, anomaly, previewNav } from '../content/data'
+import { profile, about, education, anomaly, previewNav, previewProjectIndex } from '../content/data'
 import s from './V6SerifPortfolio.module.css'
 
 const marquee = [
@@ -98,7 +98,7 @@ export default function V6SerifPortfolio() {
 
         <section id="anomaly" className={s.work}>
           <Reveal className={s.workMeta}>
-            <span className={s.tag}>(Selected Work — {anomaly.index})</span>
+            <span className={s.tag}>(Selected Work — {previewProjectIndex})</span>
             <span className={s.workYear}>{anomaly.period}</span>
           </Reveal>
           <Reveal as="h2" className={s.workTitle}>{anomaly.title}</Reveal>
