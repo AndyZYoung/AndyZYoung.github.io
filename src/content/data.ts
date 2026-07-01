@@ -67,7 +67,7 @@ export const education: Education[] = [
     school: 'Shanghai University',
     degree: 'B.Eng. in Data Science and Big Data Technology',
     period: 'Sep 2022 - Jun 2026 (Conferred)',
-    detail: 'GPA 83.6 / 100',
+    detail: 'GPA 86.1 / 100',
     coursesLabel: 'Core courses taken',
     courses: [
       'Machine Learning',

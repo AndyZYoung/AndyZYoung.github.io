@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { motion } from 'framer-motion'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import s from './ProjectDiagram.module.css'
@@ -17,6 +18,13 @@ const renderedFormulas = formulas.map((formula) =>
     throwOnError: false,
   }),
 )
+
+const diagramReveal = (delay = 0) => ({
+  initial: { y: 12, opacity: 0 },
+  whileInView: { y: 0, opacity: 1 },
+  viewport: { once: true, margin: '0px 0px -8% 0px' },
+  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const },
+})
 
 const assistantStages = [
   ['Course materials', 'Slides, notes, and teaching documents'],
@@ -55,15 +63,15 @@ function AssistantDiagram({ labelId }: { labelId: string }) {
     <div className={`${s.panel} ${s.assistantPanel}`} role="group" aria-labelledby={labelId}>
       <ol className={s.pipeline} aria-label="Course assistant processing stages">
         {assistantStages.map(([title, detail], index) => (
-          <li key={title}>
+          <motion.li key={title} {...diagramReveal(index * 0.055)}>
             <span className={s.stageNumber}>{String(index + 1).padStart(2, '0')}</span>
             <strong>{title}</strong>
             <small>{detail}</small>
-          </li>
+          </motion.li>
         ))}
       </ol>
 
-      <div className={s.delivery}>
+      <motion.div className={s.delivery} {...diagramReveal(0.26)}>
         <span className={s.deliveryLabel}>Delivery</span>
         <div className={s.outputs}>
           <div>
@@ -75,7 +83,7 @@ function AssistantDiagram({ labelId }: { labelId: string }) {
             <small>Three.js · Azure TTS</small>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -83,7 +91,7 @@ function AssistantDiagram({ labelId }: { labelId: string }) {
 function MindSporeDiagram({ labelId }: { labelId: string }) {
   return (
     <div className={`${s.panel} ${s.mindPanel}`} role="group" aria-labelledby={labelId}>
-      <div className={s.studySummary}>
+      <motion.div className={s.studySummary} {...diagramReveal(0)}>
         <div className={s.metric}>
           <strong>128D</strong>
           <span>encoding dimensions</span>
@@ -97,9 +105,9 @@ function MindSporeDiagram({ labelId }: { labelId: string }) {
             <div key={formulas[index]} dangerouslySetInnerHTML={{ __html: formula }} />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <figure className={s.heatmapFigure}>
+      <motion.figure className={s.heatmapFigure} {...diagramReveal(0.08)}>
         <img
           src="/projects/mindspore-positional-encoding.webp"
           width="2400"
@@ -113,7 +121,7 @@ function MindSporeDiagram({ labelId }: { labelId: string }) {
           nearby tokens, while slower bands retain longer-range order—giving self-attention deterministic access to
           sequence structure.
         </figcaption>
-      </figure>
+      </motion.figure>
     </div>
   )
 }
@@ -123,18 +131,22 @@ function SegmentationDiagram({ labelId }: { labelId: string }) {
     <div className={`${s.panel} ${s.researchPanel}`} role="group" aria-labelledby={labelId}>
       <ol className={s.researchChain} aria-label="Customer segmentation research decision chain">
         {researchStages.map((stage, index) => (
-          <li key={stage.title} className={index === 2 || index === 3 ? s.researchDecision : undefined}>
+          <motion.li
+            key={stage.title}
+            className={index === 2 || index === 3 ? s.researchDecision : undefined}
+            {...diagramReveal(index * 0.045)}
+          >
             <span className={s.researchNumber}>{String(index + 1).padStart(2, '0')}</span>
             <div>
               <strong>{stage.title}</strong>
               <span>{stage.detail}</span>
               {'decision' in stage && stage.decision ? <em>{stage.decision}</em> : null}
             </div>
-          </li>
+          </motion.li>
         ))}
       </ol>
       <div className={s.researchSpacer} aria-hidden="true" />
-      <div className={s.researchOutcome}>
+      <motion.div className={s.researchOutcome} {...diagramReveal(0.24)}>
         <span className={s.outcomeIntro}>
           <small>Research outcome</small>
           <strong>Interpretable SKU Taxonomy</strong>
@@ -144,7 +156,7 @@ function SegmentationDiagram({ labelId }: { labelId: string }) {
           <small>Balanced categories</small>
         </span>
         <p className={s.outcomeCategories}>Luxury · Cost-effective · Bargain · Other</p>
-      </div>
+      </motion.div>
     </div>
   )
 }

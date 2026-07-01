@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { motion, useScroll, useSpring, MotionConfig } from 'framer-motion'
+import { motion, useReducedMotion, useScroll, useSpring, useTransform, MotionConfig } from 'framer-motion'
 import { useLenis, scrollToId } from '../hooks/useLenis'
 import { useActiveSection } from '../hooks/useActiveSection'
 import { YouTube } from '../components/YouTube'
@@ -9,17 +9,17 @@ import { profile, about, education, experience, projects, activities, navItems }
 import s from './PersonalSite.module.css'
 
 const slideIn = (from: number, delay = 0) => ({
-  initial: { x: from, opacity: 0 },
+  initial: { x: Math.sign(from) * Math.min(Math.abs(from), 38), opacity: 0 },
   whileInView: { x: 0, opacity: 1 },
   viewport: { once: true, margin: '0px 0px -12% 0px' },
-  transition: { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] as const },
+  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const },
 })
 
 const rise = (delay = 0) => ({
-  initial: { y: 30, opacity: 0 },
+  initial: { y: 22, opacity: 0 },
   whileInView: { y: 0, opacity: 1 },
   viewport: { once: true, margin: '0px 0px -10% 0px' },
-  transition: { duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] as const },
+  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const },
 })
 
 const panelColor = ['eduBlue', 'eduMustard', 'eduBlue', 'eduMustard'] as const
@@ -35,10 +35,21 @@ const scrollToSection = (id: string) => {
 
 export default function PersonalSite() {
   useLenis()
+  const reduceMotion = useReducedMotion()
   const active = useActiveSection(navItems.map((n) => n.id))
   const navListRef = useRef<HTMLElement>(null)
+  const heroRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll()
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  })
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 })
+  const blueY = useSpring(useTransform(heroScroll, [0, 1], [0, -34]), { stiffness: 90, damping: 28, mass: 0.5 })
+  const mustardY = useSpring(useTransform(heroScroll, [0, 1], [0, 26]), { stiffness: 90, damping: 28, mass: 0.5 })
+  const brickY = useSpring(useTransform(heroScroll, [0, 1], [0, -22]), { stiffness: 90, damping: 28, mass: 0.5 })
+  const mustardRotate = useSpring(useTransform(heroScroll, [0, 1], [0, 4]), { stiffness: 90, damping: 28, mass: 0.5 })
+  const brickRotate = useSpring(useTransform(heroScroll, [0, 1], [0, -3]), { stiffness: 90, damping: 28, mass: 0.5 })
 
   useEffect(() => {
     if (!active || window.innerWidth > 980) return
@@ -87,40 +98,44 @@ export default function PersonalSite() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         {/* HOME */}
-        <section id="home" className={s.hero}>
+        <section id="home" className={s.hero} ref={heroRef}>
           <div className={s.heroShapes} aria-hidden>
             <motion.span
               className={s.shapeBlue}
               initial={{ x: -80, opacity: 0 }}
-              animate={{ x: 0, opacity: 1, y: [0, -18, 0] }}
+              animate={{ x: 0, opacity: 1 }}
+              style={reduceMotion ? undefined : { y: blueY }}
               transition={{
                 x: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
                 opacity: { duration: 0.8 },
-                y: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
               }}
-            />
+            >
+              <span className={s.shapeBlueFill} />
+            </motion.span>
             <motion.span
               className={s.shapeMustard}
               initial={{ x: 80, opacity: 0 }}
-              animate={{ x: 0, opacity: 1, y: [0, 16, 0], rotate: [0, 8, 0] }}
+              animate={{ x: 0, opacity: 1 }}
+              style={reduceMotion ? undefined : { y: mustardY, rotate: mustardRotate }}
               transition={{
                 x: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
                 opacity: { duration: 0.8 },
-                y: { duration: 9, repeat: Infinity, ease: 'easeInOut' },
-                rotate: { duration: 9, repeat: Infinity, ease: 'easeInOut' },
               }}
-            />
+            >
+              <span className={s.shapeMustardFill} />
+            </motion.span>
             <motion.span
               className={s.shapeBrick}
               initial={{ x: 60, opacity: 0 }}
-              animate={{ x: 0, opacity: 1, y: [0, -12, 0], rotate: [0, -6, 0] }}
+              animate={{ x: 0, opacity: 1 }}
+              style={reduceMotion ? undefined : { y: brickY, rotate: brickRotate }}
               transition={{
                 x: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
                 opacity: { duration: 0.8 },
-                y: { duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 },
-                rotate: { duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 },
               }}
-            />
+            >
+              <span className={s.shapeBrickFill} />
+            </motion.span>
           </div>
           <div className={s.heroContent}>
             <motion.div className={s.heroKicker} {...rise(0)}>{profile.disciplines.join('  /  ')}</motion.div>
@@ -140,7 +155,7 @@ export default function PersonalSite() {
               <a className={s.btnPrimary} href={profile.links.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowIcon size={15} /></a>
               <a className={s.btnLine} href={profile.links.handshake} target="_blank" rel="noreferrer">Handshake</a>
               <a className={s.btnLine} href={profile.resumePreview} target="_blank" rel="noreferrer"><DocIcon size={14} /> Preview resume</a>
-              <a className={s.btnLine} href={profile.resumeDownload} download><DownloadIcon size={14} /> Download</a>
+              <a className={s.btnLine} href={profile.resumeDownload} download><DownloadIcon size={14} /> Download resume</a>
             </motion.div>
           </div>
           <button className={s.scrollHint} onClick={() => scrollToSection('about')}>Scroll ↓</button>
